@@ -1,0 +1,329 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * AIVA Design System — Adaptive Theme
+ * Light mode defaults + Dark mode overrides
+ */
+
+:root {
+  /* Core surfaces — Light mode */
+  --aiva-bg: #f5f6f8;
+  --aiva-surface: #ffffff;
+  --aiva-surface-elevated: #ffffff;
+  --aiva-surface-hover: #f0f1f3;
+
+  /* Borders */
+  --aiva-border: #d1d5db;
+  --aiva-border-subtle: #e5e7eb;
+
+  /* Accent */
+  --aiva-accent: #059669;
+  --aiva-accent-hover: #047857;
+  --aiva-accent-muted: #d1fae5;
+  --aiva-accent-surface: rgba(5, 150, 105, 0.06);
+
+  /* Text hierarchy */
+  --aiva-text-primary: #111827;
+  --aiva-text-secondary: #374151;
+  --aiva-text-muted: #6b7280;
+  --aiva-text-faint: #9ca3af;
+  --aiva-text-accent: #059669;
+
+  /* Semantic */
+  --aiva-success: #059669;
+  --aiva-warning: #d97706;
+  --aiva-danger: #dc2626;
+  --aiva-info: #2563eb;
+
+  /* Severity palette */
+  --aiva-critical: #dc2626;
+  --aiva-critical-bg: rgba(220, 38, 38, 0.08);
+  --aiva-warning-bg: rgba(217, 119, 6, 0.08);
+  --aiva-info-bg: rgba(37, 99, 235, 0.08);
+
+  /* Spacing & sizing */
+  --aiva-radius: 6px;
+  --aiva-radius-lg: 10px;
+}
+
+.dark {
+  /* Core surfaces — Dark mode (Bloomberg Terminal) */
+  --aiva-bg: #030712;
+  --aiva-surface: #0a0f1a;
+  --aiva-surface-elevated: #111827;
+  --aiva-surface-hover: #1f2937;
+
+  /* Borders */
+  --aiva-border: #374151;
+  --aiva-border-subtle: #1f2937;
+
+  /* Accent */
+  --aiva-accent: #34d399;
+  --aiva-accent-hover: #6ee7b7;
+  --aiva-accent-muted: #065f46;
+  --aiva-accent-surface: rgba(52, 211, 153, 0.08);
+
+  /* Text hierarchy */
+  --aiva-text-primary: #f3f4f6;
+  --aiva-text-secondary: #d1d5db;
+  --aiva-text-muted: #6b7280;
+  --aiva-text-faint: #4b5563;
+  --aiva-text-accent: #34d399;
+
+  /* Semantic */
+  --aiva-success: #34d399;
+  --aiva-warning: #fbbf24;
+  --aiva-danger: #f87171;
+  --aiva-info: #60a5fa;
+
+  /* Severity palette */
+  --aiva-critical: #ef4444;
+  --aiva-critical-bg: rgba(239, 68, 68, 0.1);
+  --aiva-warning-bg: rgba(251, 191, 36, 0.1);
+  --aiva-info-bg: rgba(96, 165, 250, 0.1);
+}
+
+/* ─── Base resets ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--aiva-bg);
+  color: var(--aiva-text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ─── Custom Scrollbar (Bloomberg-style thin dark) ─────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--aiva-bg);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--aiva-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--aiva-text-muted);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--aiva-border) var(--aiva-bg);
+}
+
+/* ─── Selection ────────────────────────────────────────────── */
+::selection {
+  background-color: var(--aiva-accent-muted);
+  color: var(--aiva-accent);
+}
+
+/* ─── Focus styles ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--aiva-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Animations ───────────────────────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px rgba(52, 211, 153, 0.2);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes recording-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ─── Utility classes ──────────────────────────────────────── */
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.3s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--aiva-surface) 25%,
+    var(--aiva-border-subtle) 50%,
+    var(--aiva-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-recording-pulse {
+  animation: recording-pulse 1.5s ease-in-out infinite;
+}
+
+/* ─── Bloomberg card style ─────────────────────────────────── */
+.aiva-card {
+  background-color: var(--aiva-surface-elevated);
+  border: 1px solid var(--aiva-border);
+  border-radius: var(--aiva-radius-lg);
+}
+
+.aiva-card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--aiva-border);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aiva-text-muted);
+}
+
+/* ─── Data table rows ──────────────────────────────────────── */
+.aiva-row {
+  border-bottom: 1px solid var(--aiva-border-subtle);
+  transition: background-color 0.15s ease;
+}
+
+.aiva-row:hover {
+  background-color: var(--aiva-accent-surface);
+}
+
+/* ─── Status indicators ───────────────────────────────────── */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot-active {
+  background-color: var(--aiva-success);
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+.status-dot-warning {
+  background-color: var(--aiva-warning);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+.status-dot-critical {
+  background-color: var(--aiva-critical);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+/* ─── Bloomberg-style data labels ──────────────────────────── */
+.data-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aiva-text-muted);
+}
+
+.data-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--aiva-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Ticker-style numbers ─────────────────────────────────── */
+.ticker-positive {
+  color: var(--aiva-success);
+}
+
+.ticker-negative {
+  color: var(--aiva-danger);
+}
+
+.ticker-neutral {
+  color: var(--aiva-text-muted);
+}
+
+/* ─── Input overrides ──────────────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px var(--aiva-surface-elevated) inset;
+  -webkit-text-fill-color: var(--aiva-text-primary);
+  caret-color: var(--aiva-text-primary);
+}
