@@ -36,6 +36,19 @@ app.include_router(scoring.router)
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
+    # Auto-seed if database is empty (needed for ephemeral filesystems like Render)
+    from app.database import SessionLocal
+    from app.models.advisor import Advisor
+    db = SessionLocal()
+    try:
+        if not db.query(Advisor).first():
+            db.close()
+            from app.mock.seed import seed_database
+            seed_database()
+        else:
+            db.close()
+    except Exception:
+        db.close()
 
 
 @app.get("/")
