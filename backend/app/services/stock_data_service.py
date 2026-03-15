@@ -66,6 +66,9 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
             except Exception:
                 pass
 
+            raw_cap = q.get("marketCap")
+            raw_vol = q.get("volume")
+
             result = TickerQuoteResponse(
                 symbol=q.get("symbol", symbol),
                 name=q.get("name", symbol),
@@ -77,8 +80,8 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
                 year_high=q.get("yearHigh"),
                 year_low=q.get("yearLow"),
                 pe_ratio=q.get("pe"),
-                market_cap=q.get("marketCap"),
-                volume=q.get("volume"),
+                market_cap=int(raw_cap) if raw_cap is not None else None,
+                volume=int(raw_vol) if raw_vol is not None else None,
                 analyst_rating=analyst_rating,
                 analyst_target=analyst_target,
                 cached_at=datetime.now(timezone.utc),
@@ -87,7 +90,9 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
             _cache[symbol] = (result, now)
             return result
 
-    except Exception:
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).exception("Failed to fetch quote for %s: %s", symbol, exc)
         # Return stale cache if available
         if symbol in _cache:
             return _cache[symbol][0]
