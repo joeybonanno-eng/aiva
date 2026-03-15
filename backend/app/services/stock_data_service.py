@@ -70,28 +70,25 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
 
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            # Fetch GLOBAL_QUOTE and OVERVIEW concurrently
-            quote_resp, overview_resp = await asyncio.gather(
-                client.get(AV_BASE, params={
-                    "function": "GLOBAL_QUOTE",
-                    "symbol": symbol,
-                    "apikey": settings.ALPHAVANTAGE_API_KEY,
-                }),
-                client.get(AV_BASE, params={
-                    "function": "OVERVIEW",
-                    "symbol": symbol,
-                    "apikey": settings.ALPHAVANTAGE_API_KEY,
-                }),
-            )
+            # Sequential requests — Alpha Vantage free tier allows 1 req/sec
+            quote_resp = await client.get(AV_BASE, params={
+                "function": "GLOBAL_QUOTE",
+                "symbol": symbol,
+                "apikey": settings.ALPHAVANTAGE_API_KEY,
+            })
 
             quote_json = quote_resp.json()
             quote_data = quote_json.get("Global Quote", {})
             if not quote_data:
-                import logging
-                logging.getLogger(__name__).warning(
-                    "No Global Quote for %s — response: %s", symbol, quote_json
-                )
                 return None
+
+            # Brief pause to respect rate limit, then fetch overview
+            await asyncio.sleep(1.2)
+            overview_resp = await client.get(AV_BASE, params={
+                "function": "OVERVIEW",
+                "symbol": symbol,
+                "apikey": settings.ALPHAVANTAGE_API_KEY,
+            })
 
             overview = overview_resp.json()
             has_overview = "Symbol" in overview
