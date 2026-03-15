@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/shared/Badge";
 import type { DashboardEvent } from "@/types";
 
@@ -50,6 +50,8 @@ function UrgencyDot({ urgency }: { urgency: string }) {
 }
 
 export function ClientEvents({ events, loading }: ClientEventsProps) {
+  const router = useRouter();
+
   if (loading) {
     return <SkeletonRows />;
   }
@@ -69,10 +71,10 @@ export function ClientEvents({ events, loading }: ClientEventsProps) {
         });
 
         return (
-          <Link
+          <div
             key={event.id}
-            href={`/clients/${event.client_id}`}
-            className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-[var(--aiva-accent-surface)] transition-colors"
+            onClick={() => router.push(`/clients/${event.client_id}`)}
+            className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-[var(--aiva-accent-surface)] transition-colors cursor-pointer"
           >
             <div className="mt-1.5">
               <UrgencyDot urgency={event.urgency} />
@@ -95,7 +97,7 @@ export function ClientEvents({ events, loading }: ClientEventsProps) {
             <span className="text-[11px] text-[var(--aiva-text-muted)] font-mono shrink-0 mt-0.5">
               {dateStr}
             </span>
-          </Link>
+          </div>
         );
       })}
     </div>

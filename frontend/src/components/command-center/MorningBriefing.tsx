@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/shared/Badge";
 import { TickerSymbol } from "@/components/shared/TickerSymbol";
 import type { MorningBriefing as MorningBriefingType } from "@/types";
@@ -67,6 +67,8 @@ export function MorningBriefingPanel({
   briefing,
   loading,
 }: MorningBriefingProps) {
+  const router = useRouter();
+
   if (loading) {
     return <SkeletonLines />;
   }
@@ -113,10 +115,10 @@ export function MorningBriefingPanel({
           </h4>
           <div className="space-y-2">
             {briefing.key_events.map((event) => (
-              <Link
+              <div
                 key={event.id}
-                href={`/clients/${event.client_id}`}
-                className="flex items-start gap-3 p-2.5 bg-[var(--aiva-surface-hover)]/50 rounded-lg hover:bg-[var(--aiva-accent-surface)] transition-colors"
+                onClick={() => router.push(`/clients/${event.client_id}`)}
+                className="flex items-start gap-3 p-2.5 bg-[var(--aiva-surface-hover)]/50 rounded-lg hover:bg-[var(--aiva-accent-surface)] transition-colors cursor-pointer"
               >
                 <Badge
                   variant={
@@ -134,7 +136,7 @@ export function MorningBriefingPanel({
                     {event.description}
                   </p>
                 </div>
-              </Link>
+              </div>
             ))}
             {briefing.key_events.length === 0 && (
               <p className="text-xs text-[var(--aiva-text-faint)]">No key events today.</p>
