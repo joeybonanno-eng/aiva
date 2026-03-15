@@ -14,11 +14,28 @@ from app.schemas.ticker import (
     TickerHoldersListResponse,
     TickerQuoteResponse,
 )
+import httpx
+
 from app.services.stock_data_service import get_ticker_quote
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/ticker", tags=["ticker"])
+
+
+@router.get("/debug/{symbol}")
+async def ticker_debug(symbol: str):
+    """Temporary debug endpoint — remove after diagnosing."""
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.get(
+            "https://www.alphavantage.co/query",
+            params={
+                "function": "GLOBAL_QUOTE",
+                "symbol": symbol.upper(),
+                "apikey": settings.ALPHAVANTAGE_API_KEY,
+            },
+        )
+        return {"status": resp.status_code, "body": resp.json(), "key_set": bool(settings.ALPHAVANTAGE_API_KEY)}
 
 
 @router.get("/{symbol}", response_model=TickerQuoteResponse)
@@ -31,7 +48,7 @@ async def ticker_quote(symbol: str):
         logger.exception("Ticker quote failed for %s", symbol)
         raise HTTPException(status_code=502, detail=f"Upstream error: {exc}")
     if result is None:
-        raise HTTPException(status_code=404, detail=f"Quote unavailable for {symbol}")
+        raise HTTPException(status_code=404, detail=f"Quote unavailable for {symbol.upper()}")
     return result
 
 

@@ -84,8 +84,13 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
                 }),
             )
 
-            quote_data = quote_resp.json().get("Global Quote", {})
+            quote_json = quote_resp.json()
+            quote_data = quote_json.get("Global Quote", {})
             if not quote_data:
+                import logging
+                logging.getLogger(__name__).warning(
+                    "No Global Quote for %s — response: %s", symbol, quote_json
+                )
                 return None
 
             overview = overview_resp.json()
