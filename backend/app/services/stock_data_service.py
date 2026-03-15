@@ -11,7 +11,7 @@ from app.schemas.ticker import TickerQuoteResponse
 _cache: dict[str, tuple[TickerQuoteResponse, float]] = {}
 _CACHE_TTL = 300  # 5 minutes
 
-FMP_BASE = "https://financialmodelingprep.com/api/v3"
+FMP_BASE = "https://financialmodelingprep.com/stable"
 
 
 async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
@@ -30,8 +30,8 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             quote_resp = await client.get(
-                f"{FMP_BASE}/quote/{symbol}",
-                params={"apikey": settings.FMP_API_KEY},
+                f"{FMP_BASE}/quote",
+                params={"symbol": symbol, "apikey": settings.FMP_API_KEY},
             )
             quote_resp.raise_for_status()
             quotes = quote_resp.json()
@@ -41,28 +41,28 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
 
             q = quotes[0]
 
-            # Fetch analyst recommendations (best-effort)
+            # Fetch analyst consensus + price target (best-effort)
             analyst_rating = None
             analyst_target = None
             try:
-                analyst_resp = await client.get(
-                    f"{FMP_BASE}/analyst-stock-recommendations/{symbol}",
-                    params={"apikey": settings.FMP_API_KEY},
+                grades_resp, target_resp = await asyncio_gather(
+                    client.get(
+                        f"{FMP_BASE}/grades-consensus",
+                        params={"symbol": symbol, "apikey": settings.FMP_API_KEY},
+                    ),
+                    client.get(
+                        f"{FMP_BASE}/price-target-consensus",
+                        params={"symbol": symbol, "apikey": settings.FMP_API_KEY},
+                    ),
                 )
-                if analyst_resp.status_code == 200:
-                    analysts = analyst_resp.json()
-                    if analysts:
-                        a = analysts[0]
-                        buy = a.get("analystRatingsbuy", 0) + a.get("analystRatingsStrongBuy", 0)
-                        sell = a.get("analystRatingsSell", 0) + a.get("analystRatingsStrongSell", 0)
-                        hold = a.get("analystRatingsHold", 0)
-                        if buy > sell and buy > hold:
-                            analyst_rating = "Buy"
-                        elif sell > buy and sell > hold:
-                            analyst_rating = "Sell"
-                        elif hold > 0 or buy > 0 or sell > 0:
-                            analyst_rating = "Hold"
-                        analyst_target = a.get("priceTarget")
+                if grades_resp.status_code == 200:
+                    grades = grades_resp.json()
+                    if grades:
+                        analyst_rating = grades[0].get("consensus")
+                if target_resp.status_code == 200:
+                    targets = target_resp.json()
+                    if targets:
+                        analyst_target = targets[0].get("targetConsensus")
             except Exception:
                 pass
 
@@ -71,7 +71,7 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
                 name=q.get("name", symbol),
                 price=q.get("price", 0),
                 change=q.get("change", 0),
-                change_pct=q.get("changesPercentage", 0),
+                change_pct=q.get("changePercentage", 0),
                 day_high=q.get("dayHigh"),
                 day_low=q.get("dayLow"),
                 year_high=q.get("yearHigh"),
@@ -92,3 +92,9 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
         if symbol in _cache:
             return _cache[symbol][0]
         return None
+
+
+async def asyncio_gather(*coros):
+    """Simple wrapper to run multiple awaitables concurrently."""
+    import asyncio
+    return await asyncio.gather(*coros)
