@@ -169,14 +169,15 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
         if now - ts < _CACHE_TTL:
             return cached
 
-    # Try Alpha Vantage first
-    try:
-        result = await _fetch_via_alphavantage(symbol)
-        if result:
-            _cache[symbol] = (result, now)
-            return result
-    except Exception:
-        logger.warning("Alpha Vantage failed for %s", symbol)
+    # Try Alpha Vantage first (skip for aliased symbols like BTC, VIX, DXY)
+    if symbol not in _YAHOO_ALIASES:
+        try:
+            result = await _fetch_via_alphavantage(symbol)
+            if result:
+                _cache[symbol] = (result, now)
+                return result
+        except Exception:
+            logger.warning("Alpha Vantage failed for %s", symbol)
 
     # Fall back to direct Yahoo Finance API
     try:
