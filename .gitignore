@@ -52,3 +52,4 @@ coverage/
 # Alembic
 backend/alembic/versions/*.py
 !backend/alembic/versions/.gitkeep
+.vercel
