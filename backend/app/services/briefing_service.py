@@ -87,6 +87,7 @@ async def generate_morning_briefing(advisor: Advisor, db: Session) -> MorningBri
         urgency = "high" if days_away <= 7 else ("medium" if days_away <= 14 else "low")
         key_events.append({
             "id": str(event.id),
+            "client_id": event.client_id,
             "title": f"{client_name} — {event.title}",
             "description": f"{event.event_date.strftime('%b %d')} ({days_away}d away)",
             "type": event.event_type,

@@ -69,18 +69,19 @@ export function ClientEvents({ events, loading }: ClientEventsProps) {
         });
 
         return (
-          <div
+          <Link
             key={event.id}
-            className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-[var(--aiva-surface-hover)]/50 transition-colors"
+            href={`/clients/${event.client_id}`}
+            className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-[var(--aiva-accent-surface)] transition-colors"
           >
             <div className="mt-1.5">
               <UrgencyDot urgency={event.urgency} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <Link href={`/clients/${event.client_id}`} className="text-sm font-medium text-[var(--aiva-text-primary)] truncate hover:text-[var(--aiva-accent)] transition-colors">
+                <span className="text-sm font-medium text-[var(--aiva-text-primary)] truncate">
                   {event.client_name}
-                </Link>
+                </span>
                 <Badge
                   variant={eventTypeVariants[event.event_type] || "default"}
                 >
@@ -94,7 +95,7 @@ export function ClientEvents({ events, loading }: ClientEventsProps) {
             <span className="text-[11px] text-[var(--aiva-text-muted)] font-mono shrink-0 mt-0.5">
               {dateStr}
             </span>
-          </div>
+          </Link>
         );
       })}
     </div>

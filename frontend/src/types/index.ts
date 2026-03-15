@@ -202,6 +202,7 @@ export interface MorningBriefing {
   summary: string;
   key_events: Array<{
     id: string;
+    client_id: number;
     title: string;
     description: string;
     type: string;

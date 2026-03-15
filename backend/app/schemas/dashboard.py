@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class BriefingKeyEvent(BaseModel):
     id: str
+    client_id: int
     title: str
     description: str
     type: str
