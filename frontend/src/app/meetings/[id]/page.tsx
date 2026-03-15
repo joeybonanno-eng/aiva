@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { WorkstationShell } from "@/components/layout/WorkstationShell";
 import { PanelContainer } from "@/components/layout/PanelContainer";
@@ -147,9 +148,9 @@ export default function MeetingDetailPage() {
                 </Badge>
               </div>
               <div className="flex items-center gap-3 mt-1">
-                <span className="text-sm text-[var(--aiva-text-muted)]">
+                <Link href={`/clients/${meeting.client_id}`} className="text-sm text-[var(--aiva-text-muted)] hover:text-[var(--aiva-accent)] transition-colors">
                   {meeting.client?.first_name} {meeting.client?.last_name}
-                </span>
+                </Link>
                 <span className="text-[var(--aiva-border)]">|</span>
                 <span className="text-xs text-[var(--aiva-text-muted)] font-mono">
                   {new Date(meeting.started_at).toLocaleDateString("en-US", {
@@ -281,9 +282,9 @@ export default function MeetingDetailPage() {
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--aiva-text-faint)] block mb-1">
                   Client
                 </span>
-                <p className="text-sm text-[var(--aiva-text-secondary)]">
+                <Link href={`/clients/${meeting.client_id}`} className="text-sm text-[var(--aiva-text-secondary)] hover:text-[var(--aiva-accent)] transition-colors">
                   {meeting.client?.first_name} {meeting.client?.last_name}
-                </p>
+                </Link>
                 <p className="text-xs text-[var(--aiva-text-muted)]">
                   {meeting.client?.company}
                 </p>

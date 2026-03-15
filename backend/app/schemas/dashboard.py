@@ -36,6 +36,7 @@ class MorningBriefingResponse(BaseModel):
 
 class DashboardEventResponse(BaseModel):
     id: int
+    client_id: int
     client_name: str
     event_type: str
     description: str

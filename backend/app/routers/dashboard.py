@@ -62,6 +62,7 @@ def get_events(
 
         result.append(DashboardEventResponse(
             id=event.id,
+            client_id=event.client_id,
             client_name=f"{client.first_name} {client.last_name}" if client else "Unknown",
             event_type=event.event_type,
             description=event.title,

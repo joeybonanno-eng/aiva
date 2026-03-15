@@ -70,7 +70,9 @@ export function TopIdeas() {
           <ScoreBadge score={idea.score} size="sm" />
           <div className="flex-1 min-w-0">
             <p className="text-sm text-[var(--aiva-text-primary)] truncate">
-              {idea.client_name}
+              <Link href={`/clients/${idea.client_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-[var(--aiva-accent)] transition-colors">
+                {idea.client_name}
+              </Link>
             </p>
             <p className="text-[10px] text-[var(--aiva-text-muted)] truncate">
               {TRIGGER_LABELS[idea.trigger_type] || idea.trigger_type}:{" "}

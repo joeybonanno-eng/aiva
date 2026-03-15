@@ -233,6 +233,7 @@ export interface MorningBriefing {
 
 export interface DashboardEvent {
   id: number;
+  client_id: number;
   client_name: string;
   event_type: string;
   description: string;

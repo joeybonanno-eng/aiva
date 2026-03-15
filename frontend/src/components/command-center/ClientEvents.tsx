@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/shared/Badge";
 import type { DashboardEvent } from "@/types";
 
@@ -77,9 +78,9 @@ export function ClientEvents({ events, loading }: ClientEventsProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-[var(--aiva-text-primary)] truncate">
+                <Link href={`/clients/${event.client_id}`} className="text-sm font-medium text-[var(--aiva-text-primary)] truncate hover:text-[var(--aiva-accent)] transition-colors">
                   {event.client_name}
-                </span>
+                </Link>
                 <Badge
                   variant={eventTypeVariants[event.event_type] || "default"}
                 >

@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { WorkstationShell } from "@/components/layout/WorkstationShell";
 import { PanelContainer } from "@/components/layout/PanelContainer";
@@ -206,9 +207,9 @@ function MeetingsContent() {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-[var(--aiva-text-muted)]">
+                      <Link href={`/clients/${meeting.client_id}`} onClick={(e) => e.stopPropagation()} className="text-xs text-[var(--aiva-text-muted)] hover:text-[var(--aiva-accent)] transition-colors">
                         {meeting.client?.first_name} {meeting.client?.last_name}
-                      </span>
+                      </Link>
                       <Badge variant="gray">
                         {meetingTypeLabels[meeting.meeting_type] || meeting.meeting_type}
                       </Badge>

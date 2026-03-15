@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { WorkstationShell } from "@/components/layout/WorkstationShell";
 import { ScoreBadge } from "@/components/ideas/ScoreBadge";
 import { IdeaDetailModal } from "@/components/ideas/IdeaDetailModal";
@@ -188,7 +189,10 @@ export default function IdeasPage() {
                       {idea.subject}
                     </p>
                     <p className="text-xs text-[var(--aiva-text-muted)] mt-1 truncate">
-                      {idea.client_name} &middot;{" "}
+                      <Link href={`/clients/${idea.client_id}`} onClick={(e) => e.stopPropagation()} className="hover:text-[var(--aiva-accent)] transition-colors">
+                        {idea.client_name}
+                      </Link>
+                      {" "}&middot;{" "}
                       {idea.rendered_content.slice(0, 100).replace(/\n/g, " ")}...
                     </p>
                   </div>
