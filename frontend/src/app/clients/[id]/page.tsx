@@ -12,6 +12,7 @@ import { apiClient } from "@/lib/api-client";
 import { ClientScoreBadge } from "@/components/clients/ClientScoreBadge";
 import { CallCycleIndicator } from "@/components/clients/CallCycleIndicator";
 import { CallCycleSettingsModal } from "@/components/clients/CallCycleSettingsModal";
+import { TickerSymbol } from "@/components/shared/TickerSymbol";
 import type {
   ClientPortfolio,
   LifeEvent,
@@ -336,7 +337,9 @@ export default function ClientDetailPage() {
                       className="hover:bg-[var(--aiva-surface-hover)]/30 transition-colors"
                     >
                       <td className="px-4 py-2.5 font-mono font-semibold text-[var(--aiva-text-primary)]">
-                        {holding.ticker}
+                        <TickerSymbol symbol={holding.ticker}>
+                          {holding.ticker}
+                        </TickerSymbol>
                       </td>
                       <td className="px-4 py-2.5 text-[var(--aiva-text-muted)]">
                         {holding.name}

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.database import engine, Base
-from app.routers import auth, clients, meetings, dashboard, alerts, messages, ws, ideas, call_cycles, scoring
+from app.routers import auth, clients, meetings, dashboard, alerts, messages, ws, ideas, call_cycles, scoring, ticker
 
 app = FastAPI(
     title="AIVA — AI Virtual Advisor",
@@ -31,6 +31,7 @@ app.include_router(ws.router)
 app.include_router(ideas.router)
 app.include_router(call_cycles.router)
 app.include_router(scoring.router)
+app.include_router(ticker.router)
 
 
 @app.on_event("startup")

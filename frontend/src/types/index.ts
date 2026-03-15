@@ -296,6 +296,26 @@ export interface ClientInsights {
   relationship_health: string;
 }
 
+// ─── Ticker Quotes ───────────────────────────────────────
+
+export interface TickerQuote {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  change_pct: number;
+  day_high: number | null;
+  day_low: number | null;
+  year_high: number | null;
+  year_low: number | null;
+  pe_ratio: number | null;
+  market_cap: number | null;
+  volume: number | null;
+  analyst_rating: "Buy" | "Hold" | "Sell" | null;
+  analyst_target: number | null;
+  cached_at: string;
+}
+
 // ─── Command Bar ──────────────────────────────────────────
 
 export interface CommandItem {

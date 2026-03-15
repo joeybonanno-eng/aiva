@@ -1,6 +1,7 @@
 "use client";
 
 import type { MarketMover } from "@/types";
+import { TickerSymbol } from "@/components/shared/TickerSymbol";
 
 interface MarketMoversProps {
   movers: MarketMover[] | null;
@@ -52,9 +53,11 @@ export function MarketMoversPanel({ movers, loading }: MarketMoversProps) {
               key={mover.symbol}
               className="flex items-center gap-2 py-2 px-1 rounded hover:bg-[var(--aiva-surface-hover)]/50 transition-colors font-mono text-xs"
             >
-              <span className="w-14 text-[var(--aiva-text-primary)] font-semibold shrink-0">
-                {mover.symbol}
-              </span>
+              <TickerSymbol symbol={mover.symbol}>
+                <span className="w-14 text-[var(--aiva-text-primary)] font-semibold shrink-0">
+                  {mover.symbol}
+                </span>
+              </TickerSymbol>
               <span className="flex-1 text-[var(--aiva-text-muted)] truncate font-sans text-xs">
                 {mover.name}
               </span>

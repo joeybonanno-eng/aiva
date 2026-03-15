@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/shared/Badge";
+import { TickerSymbol } from "@/components/shared/TickerSymbol";
 import type { MorningBriefing as MorningBriefingType } from "@/types";
 
 interface MorningBriefingProps {
@@ -151,9 +152,11 @@ export function MorningBriefingPanel({
                 className="flex items-center justify-between p-2.5 bg-[var(--aiva-surface-hover)]/50 rounded-lg"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-semibold text-[var(--aiva-text-primary)] font-mono">
-                    {item.symbol}
-                  </span>
+                  <TickerSymbol symbol={item.symbol}>
+                    <span className="text-xs font-semibold text-[var(--aiva-text-primary)] font-mono">
+                      {item.symbol}
+                    </span>
+                  </TickerSymbol>
                   <span className="text-xs text-[var(--aiva-text-muted)] truncate">
                     {item.name}
                   </span>

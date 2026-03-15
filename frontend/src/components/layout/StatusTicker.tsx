@@ -1,5 +1,7 @@
 "use client";
 
+import { TickerSymbol } from "@/components/shared/TickerSymbol";
+
 interface TickerItem {
   symbol: string;
   price: number;
@@ -54,7 +56,9 @@ export function StatusTicker() {
       <div className="flex items-center animate-ticker whitespace-nowrap">
         {items.map((item, index) => (
           <span key={`${item.symbol}-${index}`} className="inline-flex items-center">
-            <TickerItemDisplay item={item} />
+            <TickerSymbol symbol={item.symbol}>
+              <TickerItemDisplay item={item} />
+            </TickerSymbol>
             <span className="text-[var(--aiva-border)] mx-1">|</span>
           </span>
         ))}

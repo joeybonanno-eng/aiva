@@ -5,6 +5,7 @@ import { WorkstationShell } from "@/components/layout/WorkstationShell";
 import { PanelContainer } from "@/components/layout/PanelContainer";
 import { Spinner } from "@/components/shared/Spinner";
 import { useAIVA } from "@/hooks/useAIVA";
+import { TickerSymbol } from "@/components/shared/TickerSymbol";
 import type { MarketMover } from "@/types";
 
 interface SectorData {
@@ -112,7 +113,9 @@ export default function MarketPage() {
                         className="hover:bg-[var(--aiva-surface-hover)]/30 transition-colors"
                       >
                         <td className="px-4 py-3 font-mono font-bold text-[var(--aiva-text-primary)]">
-                          {mover.symbol}
+                          <TickerSymbol symbol={mover.symbol}>
+                            {mover.symbol}
+                          </TickerSymbol>
                         </td>
                         <td className="px-4 py-3 text-[var(--aiva-text-muted)]">
                           {mover.name}
