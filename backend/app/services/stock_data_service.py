@@ -22,6 +22,16 @@ _HTTP_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; AIVA/1.0)",
 }
 
+# Map common display symbols to Yahoo Finance symbols
+_YAHOO_ALIASES: dict[str, str] = {
+    "BTC": "BTC-USD",
+    "ETH": "ETH-USD",
+    "VIX": "^VIX",
+    "DXY": "DX-Y.NYB",
+    "TNX": "^TNX",
+    "GSPC": "^GSPC",
+}
+
 
 def _safe_float(val) -> Optional[float]:
     if val is None or val in ("None", "-", ""):
@@ -110,9 +120,10 @@ async def _fetch_via_alphavantage(symbol: str) -> Optional[TickerQuoteResponse]:
 
 async def _fetch_via_yahoo(symbol: str) -> Optional[TickerQuoteResponse]:
     """Fallback: direct Yahoo Finance chart API (single lightweight request)."""
+    yf_symbol = _YAHOO_ALIASES.get(symbol, symbol)
     async with httpx.AsyncClient(timeout=10, headers=_HTTP_HEADERS) as client:
         resp = await client.get(
-            f"{YF_CHART}/{symbol}",
+            f"{YF_CHART}/{yf_symbol}",
             params={"interval": "1d", "range": "5d"},
         )
         data = resp.json()
