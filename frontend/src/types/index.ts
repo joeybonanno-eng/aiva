@@ -316,6 +316,14 @@ export interface TickerQuote {
   cached_at: string;
 }
 
+export interface TickerHolder {
+  client_id: number;
+  client_name: string;
+  value: number;
+  allocation_pct: number;
+  gain_loss_pct: number;
+}
+
 // ─── Command Bar ──────────────────────────────────────────
 
 export interface CommandItem {

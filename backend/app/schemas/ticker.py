@@ -20,3 +20,18 @@ class TickerQuoteResponse(BaseModel):
     analyst_rating: Optional[str] = None  # "Buy" / "Hold" / "Sell"
     analyst_target: Optional[float] = None
     cached_at: datetime
+
+
+class TickerHolderResponse(BaseModel):
+    client_id: int
+    client_name: str
+    value: float
+    allocation_pct: float
+    gain_loss_pct: float
+
+    model_config = {"from_attributes": True}
+
+
+class TickerHoldersListResponse(BaseModel):
+    symbol: str
+    holders: list[TickerHolderResponse]

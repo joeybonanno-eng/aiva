@@ -23,6 +23,7 @@ import type {
   ClientScore,
   ClientCallCycle,
   TickerQuote,
+  TickerHolder,
 } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -420,6 +421,12 @@ class ApiClient {
 
   async getTickerQuote(symbol: string): Promise<TickerQuote> {
     return this.request<TickerQuote>(`/api/ticker/${encodeURIComponent(symbol)}`);
+  }
+
+  async getTickerHolders(symbol: string): Promise<{ symbol: string; holders: TickerHolder[] }> {
+    return this.request<{ symbol: string; holders: TickerHolder[] }>(
+      `/api/ticker/${encodeURIComponent(symbol)}/holders`
+    );
   }
 
   async listCallCycles(params?: {

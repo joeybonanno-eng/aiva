@@ -6,6 +6,7 @@ import { PanelContainer } from "@/components/layout/PanelContainer";
 import { Spinner } from "@/components/shared/Spinner";
 import { useAIVA } from "@/hooks/useAIVA";
 import { TickerSymbol } from "@/components/shared/TickerSymbol";
+import { TickerLookup } from "@/components/market/TickerLookup";
 import type { MarketMover } from "@/types";
 
 interface SectorData {
@@ -71,6 +72,11 @@ export default function MarketPage() {
             </span>
           </div>
         </div>
+
+        {/* Ticker Lookup */}
+        <PanelContainer title="Ticker Lookup">
+          <TickerLookup />
+        </PanelContainer>
 
         {/* Market Movers — full table */}
         <PanelContainer title="Market Movers" noPadding>
