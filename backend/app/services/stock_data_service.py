@@ -122,4 +122,4 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
         # Return stale cache if available
         if symbol in _cache:
             return _cache[symbol][0]
-        return None
+        raise
