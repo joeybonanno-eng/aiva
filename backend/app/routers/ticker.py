@@ -24,24 +24,10 @@ router = APIRouter(prefix="/api/ticker", tags=["ticker"])
 @router.get("/health")
 def ticker_health():
     """Check which stock data providers are available."""
-    providers = []
+    providers = ["yahoo_finance"]
     if settings.ALPHAVANTAGE_API_KEY:
-        providers.append("alphavantage")
-    yf_test = None
-    try:
-        import yfinance as yf
-        providers.append(f"yfinance=={yf.__version__}")
-        t = yf.Ticker("AAPL")
-        info = t.info
-        yf_test = {
-            "keys_count": len(info),
-            "has_price": "regularMarketPrice" in info,
-            "price": info.get("regularMarketPrice"),
-            "sample_keys": sorted(info.keys())[:10],
-        }
-    except Exception as e:
-        yf_test = {"error": str(e)}
-    return {"providers": providers, "yfinance_test": yf_test}
+        providers.insert(0, "alphavantage")
+    return {"providers": providers}
 
 
 @router.get("/{symbol}", response_model=TickerQuoteResponse)

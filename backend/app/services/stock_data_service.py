@@ -16,6 +16,11 @@ _cache: dict[str, tuple[TickerQuoteResponse, float]] = {}
 _CACHE_TTL = 300  # 5 minutes
 
 AV_BASE = "https://www.alphavantage.co/query"
+YF_CHART = "https://query1.finance.yahoo.com/v8/finance/chart"
+
+_HTTP_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; AIVA/1.0)",
+}
 
 
 def _safe_float(val) -> Optional[float]:
@@ -103,50 +108,44 @@ async def _fetch_via_alphavantage(symbol: str) -> Optional[TickerQuoteResponse]:
         )
 
 
-def _fetch_via_yfinance(symbol: str) -> Optional[TickerQuoteResponse]:
-    """Fallback to yfinance when Alpha Vantage is unavailable."""
-    try:
-        import yfinance as yf
-    except ImportError:
-        return None
+async def _fetch_via_yahoo(symbol: str) -> Optional[TickerQuoteResponse]:
+    """Fallback: direct Yahoo Finance chart API (single lightweight request)."""
+    async with httpx.AsyncClient(timeout=10, headers=_HTTP_HEADERS) as client:
+        resp = await client.get(
+            f"{YF_CHART}/{symbol}",
+            params={"interval": "1d", "range": "5d"},
+        )
+        data = resp.json()
+        result = (data.get("chart", {}).get("result") or [None])[0]
+        if not result:
+            return None
 
-    ticker = yf.Ticker(symbol)
-    info = ticker.info
-    if not info or "regularMarketPrice" not in info:
-        return None
+        meta = result.get("meta", {})
+        price = meta.get("regularMarketPrice")
+        if price is None:
+            return None
 
-    price = info.get("regularMarketPrice") or info.get("currentPrice") or 0
-    prev_close = info.get("regularMarketPreviousClose") or info.get("previousClose") or 0
-    change = price - prev_close if prev_close else 0
-    change_pct = (change / prev_close * 100) if prev_close else 0
+        prev_close = meta.get("chartPreviousClose") or meta.get("previousClose") or 0
+        change = round(price - prev_close, 2) if prev_close else 0
+        change_pct = round((change / prev_close) * 100, 2) if prev_close else 0
 
-    # Derive analyst rating from recommendation
-    rec = (info.get("recommendationKey") or "").lower()
-    analyst_rating = None
-    if rec in ("strong_buy", "buy"):
-        analyst_rating = "Buy"
-    elif rec in ("hold", "neutral"):
-        analyst_rating = "Hold"
-    elif rec in ("sell", "strong_sell", "underperform"):
-        analyst_rating = "Sell"
-
-    return TickerQuoteResponse(
-        symbol=symbol,
-        name=info.get("shortName") or info.get("longName") or symbol,
-        price=price,
-        change=round(change, 2),
-        change_pct=round(change_pct, 2),
-        day_high=info.get("dayHigh"),
-        day_low=info.get("dayLow"),
-        year_high=info.get("fiftyTwoWeekHigh"),
-        year_low=info.get("fiftyTwoWeekLow"),
-        pe_ratio=info.get("trailingPE"),
-        market_cap=info.get("marketCap"),
-        volume=info.get("regularMarketVolume") or info.get("volume"),
-        analyst_rating=analyst_rating,
-        analyst_target=info.get("targetMeanPrice"),
-        cached_at=datetime.now(timezone.utc),
-    )
+        return TickerQuoteResponse(
+            symbol=symbol,
+            name=meta.get("shortName") or meta.get("longName") or symbol,
+            price=price,
+            change=change,
+            change_pct=change_pct,
+            day_high=meta.get("regularMarketDayHigh"),
+            day_low=meta.get("regularMarketDayLow"),
+            year_high=meta.get("fiftyTwoWeekHigh"),
+            year_low=meta.get("fiftyTwoWeekLow"),
+            pe_ratio=None,
+            market_cap=None,
+            volume=meta.get("regularMarketVolume"),
+            analyst_rating=None,
+            analyst_target=None,
+            cached_at=datetime.now(timezone.utc),
+        )
 
 
 async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
@@ -166,16 +165,16 @@ async def get_ticker_quote(symbol: str) -> Optional[TickerQuoteResponse]:
             _cache[symbol] = (result, now)
             return result
     except Exception:
-        logger.warning("Alpha Vantage failed for %s, trying yfinance", symbol)
+        logger.warning("Alpha Vantage failed for %s", symbol)
 
-    # Fall back to yfinance (synchronous, run in thread)
+    # Fall back to direct Yahoo Finance API
     try:
-        result = await asyncio.to_thread(_fetch_via_yfinance, symbol)
+        result = await _fetch_via_yahoo(symbol)
         if result:
             _cache[symbol] = (result, now)
             return result
     except Exception:
-        logger.exception("yfinance also failed for %s", symbol)
+        logger.warning("Yahoo Finance also failed for %s", symbol)
 
     # Return stale cache if available
     if symbol in _cache:
