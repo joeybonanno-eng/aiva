@@ -27,12 +27,21 @@ def ticker_health():
     providers = []
     if settings.ALPHAVANTAGE_API_KEY:
         providers.append("alphavantage")
+    yf_test = None
     try:
-        import yfinance
-        providers.append(f"yfinance=={yfinance.__version__}")
-    except ImportError:
-        pass
-    return {"providers": providers}
+        import yfinance as yf
+        providers.append(f"yfinance=={yf.__version__}")
+        t = yf.Ticker("AAPL")
+        info = t.info
+        yf_test = {
+            "keys_count": len(info),
+            "has_price": "regularMarketPrice" in info,
+            "price": info.get("regularMarketPrice"),
+            "sample_keys": sorted(info.keys())[:10],
+        }
+    except Exception as e:
+        yf_test = {"error": str(e)}
+    return {"providers": providers, "yfinance_test": yf_test}
 
 
 @router.get("/{symbol}", response_model=TickerQuoteResponse)
