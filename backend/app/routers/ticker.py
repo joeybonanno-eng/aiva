@@ -23,8 +23,8 @@ router = APIRouter(prefix="/api/ticker", tags=["ticker"])
 
 @router.get("/{symbol}", response_model=TickerQuoteResponse)
 async def ticker_quote(symbol: str):
-    if not settings.FMP_API_KEY:
-        raise HTTPException(status_code=503, detail="FMP_API_KEY not configured")
+    if not settings.ALPHAVANTAGE_API_KEY:
+        raise HTTPException(status_code=503, detail="ALPHAVANTAGE_API_KEY not configured")
     try:
         result = await get_ticker_quote(symbol)
     except Exception as exc:
