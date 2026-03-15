@@ -21,10 +21,22 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/ticker", tags=["ticker"])
 
 
+@router.get("/health")
+def ticker_health():
+    """Check which stock data providers are available."""
+    providers = []
+    if settings.ALPHAVANTAGE_API_KEY:
+        providers.append("alphavantage")
+    try:
+        import yfinance
+        providers.append(f"yfinance=={yfinance.__version__}")
+    except ImportError:
+        pass
+    return {"providers": providers}
+
+
 @router.get("/{symbol}", response_model=TickerQuoteResponse)
 async def ticker_quote(symbol: str):
-    if not settings.ALPHAVANTAGE_API_KEY:
-        raise HTTPException(status_code=503, detail="Stock data service unavailable")
     try:
         result = await get_ticker_quote(symbol)
     except Exception as exc:
